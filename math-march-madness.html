@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>🏀 March Math Madness 🏀</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #0b6623;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+.game-container {
+    background-color: #1e3d59;
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 900px;
+    margin: auto;
+    box-shadow: 0 0 20px black;
+}
+h1 { color: orange; }
+button {
+    padding: 12px 20px;
+    margin: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+.answer-btn { background-color: orange; }
+.answer-btn:hover { background-color: #ff9900; }
+.hidden { display: none; }
+.standard { font-size: 14px; color: #ccc; margin-bottom: 10px; }
+.explanation {
+    margin-top: 15px;
+    font-size: 16px;
+    background-color: #13293d;
+    padding: 10px;
+    border-radius: 8px;
+}
+</style>
+</head>
+<body>
+
+<div class="game-container">
+<h1>🏀 March Math Madness 🏀</h1>
+<h2>NYS Grade 6 Tournament Review</h2>
+
+<div id="round">Round: Sweet 16</div>
+<div id="score">Score: 0</div>
+
+<div id="question-container">
+<div class="standard" id="standard"></div>
+<h3 id="question"></h3>
+<div id="answers"></div>
+</div>
+
+<div id="result" class="hidden"></div>
+<div id="explanation" class="explanation hidden"></div>
+<button onclick="nextQuestion()" id="nextBtn" class="hidden">Next ➡️</button>
+</div>
+
+<script>
+
+const questions = [
+
+{question:"The ratio of rebounds to assists is 4:5. There were 36 total. How many rebounds?",
+standard:"6.RP.1",
+answers:["16","20","18","24"],
+correct:0,
+explanation:"4+5=9 parts. 36 ÷ 9 = 4. Rebounds = 4×4 = 16."},
+
+{question:"What is 3/4 ÷ 1/2?",
+standard:"6.NS.1",
+answers:["1 1/2","3/8","1/4","2/3"],
+correct:0,
+explanation:"Multiply by reciprocal: 3/4 × 2 = 6/4 = 1 1/2."},
+
+{question:"Solve: x + 9 = 21",
+standard:"6.EE.7",
+answers:["12","10","11","13"],
+correct:0,
+explanation:"Subtract 9 from both sides: x = 12."},
+
+{question:"Solve: 5x = 40",
+standard:"6.EE.7",
+answers:["8","6","5","10"],
+correct:0,
+explanation:"Divide both sides by 5: x = 8."},
+
+{question:"What is the area of a rectangle with length 12 and width 5?",
+standard:"6.G.1",
+answers:["60","34","50","70"],
+correct:0,
+explanation:"Area = length × width = 60."},
+
+{question:"What is 0.25 written as a fraction?",
+standard:"6.NS.2",
+answers:["1/4","2/5","1/5","3/4"],
+correct:0,
+explanation:"0.25 = 25/100 = 1/4."},
+
+{question:"Find 30% of 90.",
+standard:"6.RP.3",
+answers:["27","30","20","18"],
+correct:0,
+explanation:"0.30 × 90 = 27."},
+
+{question:"Mean of 8, 12, 16, 20?",
+standard:"6.SP.3",
+answers:["14","15","16","13"],
+correct:0,
+explanation:"Total = 56 ÷ 4 = 14."},
+
+{question:"Solve: x - 7 = 15",
+standard:"6.EE.7",
+answers:["22","21","20","23"],
+correct:0,
+explanation:"Add 7 to both sides: x = 22."},
+
+{question:"What is 5/6 × 12?",
+standard:"6.NS.1",
+answers:["10","12","8","9"],
+correct:0,
+explanation:"12 ÷ 6 = 2. 2 × 5 = 10."},
+
+{question:"Perimeter of square with side 9?",
+standard:"6.G.4",
+answers:["36","27","18","45"],
+correct:0,
+explanation:"4 × 9 = 36."},
+
+{question:"What percent is 15 out of 60?",
+standard:"6.RP.3",
+answers:["25%","20%","30%","15%"],
+correct:0,
+explanation:"15 ÷ 60 = 0.25 = 25%."},
+
+{question:"Solve: 3x = 27",
+standard:"6.EE.7",
+answers:["9","8","7","6"],
+correct:0,
+explanation:"Divide by 3: x = 9."},
+
+{question:"Volume of rectangular prism: 4 × 3 × 5?",
+standard:"6.G.2",
+answers:["60","12","40","45"],
+correct:0,
+explanation:"Multiply: 4×3×5 = 60."},
+
+{question:"Find the median: 5, 9, 12, 15, 18",
+standard:"6.SP.3",
+answers:["12","9","15","10"],
+correct:0,
+explanation:"Middle number is 12."},
+
+{question:"What is 2/3 of 21?",
+standard:"6.NS.1",
+answers:["14","7","12","9"],
+correct:0,
+explanation:"21 ÷ 3 = 7. 7 × 2 = 14."}
+
+];
+
+let currentQuestion = 0;
+let score = 0;
+
+function loadQuestion(){
+document.getElementById("question").innerText=questions[currentQuestion].question;
+document.getElementById("standard").innerText="Standard: "+questions[currentQuestion].standard;
+let answersDiv=document.getElementById("answers");
+answersDiv.innerHTML="";
+questions[currentQuestion].answers.forEach((answer,index)=>{
+let button=document.createElement("button");
+button.innerText=answer;
+button.classList.add("answer-btn");
+button.onclick=()=>checkAnswer(index);
+answersDiv.appendChild(button);
+});
+}
+
+function checkAnswer(index){
+let result=document.getElementById("result");
+let explanation=document.getElementById("explanation");
+result.classList.remove("hidden");
+explanation.classList.remove("hidden");
+if(index===questions[currentQuestion].correct){
+score+=2;
+result.innerHTML="🏀 SWISH! +2 Points!";
+}else{
+result.innerHTML="❌ Missed Shot! Correct Answer: "+
+questions[currentQuestion].answers[questions[currentQuestion].correct];
+}
+explanation.innerHTML=questions[currentQuestion].explanation;
+document.getElementById("score").innerText="Score: "+score;
+document.getElementById("nextBtn").classList.remove("hidden");
+}
+
+function nextQuestion(){
+currentQuestion++;
+document.getElementById("result").classList.add("hidden");
+document.getElementById("explanation").classList.add("hidden");
+document.getElementById("nextBtn").classList.add("hidden");
+if(currentQuestion<questions.length){
+updateRound();
+loadQuestion();
+}else{
+document.getElementById("question-container").innerHTML=
+"<h2>🏆 Championship Complete! 🏆</h2>"+
+"<h3>Final Score: "+score+"</h3>";
+}
+}
+
+function updateRound(){
+let round=document.getElementById("round");
+if(currentQuestion<4) round.innerText="Round: Sweet 16";
+else if(currentQuestion<8) round.innerText="Round: Elite 8";
+else if(currentQuestion<12) round.innerText="Round: Final Four";
+else round.innerText="Round: Championship";
+}
+
+loadQuestion();
+
+</script>
+</body>
+</html>
